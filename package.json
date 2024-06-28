@@ -3,13 +3,16 @@
   "displayName": "SX",
   "description": "Bitcoin Script Extended Syntax Highlighting",
   "version": "0.0.1",
+  "repository": "https://github.com/F1r3Hydr4nt/SX-VSCode-Highlighting",
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
     "Programming Languages"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:sx"
+  ],
   "main": "./extension.js",
   "contributes": {
     "languages": [
@@ -26,14 +29,8 @@
         "scopeName": "source.sx",
         "path": "./syntaxes/sx.tmLanguage.json"
       }
-    ],
-    "themes": [
-      {
-        "label": "SX Theme",
-        "uiTheme": "vs-dark",
-        "path": "./themes/sx-theme.json"
-      }
     ]
+   
   },
   "scripts": {
     "lint": "eslint .",

@@ -8,7 +8,7 @@
       "patterns": [
         {
           "match": "(?i)\\b(import|repeat|end)\\b(?=.*?(?=\\s|$))",
-          "name": "keyword"
+          "name": "keyword.sx"
         },
         {
           "match": "(?i)\\b(?:OP_)?(toAltStack|fromAltStack|ifDup|depth|drop|dup|nip|over|pick|roll|rot|swap|tuck|2drop|2dup|3dup|2over|2rot|2swap)\\b(?=\\s|//|/\\*|$)",
@@ -48,7 +48,7 @@
         },
         {
           "match": "(?i)\\.\\w+(?:\\.\\d+)?(?=\\s|//|/\\*|$)",
-          "name": "variable"
+          "name": "variable.sx"
         },
         {
           "match": "(?i)[-]?[0-9]+n(?=\\s|//|/\\*|$)",
