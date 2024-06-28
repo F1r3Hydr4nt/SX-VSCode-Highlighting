@@ -1,0 +1,144 @@
+{
+  "name": "SX",
+  "scopeName": "source.sx",
+  "fileTypes": ["sx"],
+  "patterns": [{ "include": "#expression" }],
+  "repository": {
+    "expression": {
+      "patterns": [
+        {
+          "match": "(?i)\\b(import|repeat|end)\\b(?=.*?(?=\\s|$))",
+          "name": "keyword"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(toAltStack|fromAltStack|ifDup|depth|drop|dup|nip|over|pick|roll|rot|swap|tuck|2drop|2dup|3dup|2over|2rot|2swap)\\b(?=\\s|//|/\\*|$)",
+          "name": "keyword.stack.sx"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(1add|1sub|2mul|2div|negate|abs|not|0notEqual|add|sub|mul|div|mod|lshift|rshift|boolAnd|boolOr|numEqualVerify|numEqual|numNotEqual|lessThanOrEqual|greaterThanOrEqual|lessThan|greaterThan|min|max|within)\\b(?=\\s|//|/\\*|$)",
+          "name": "keyword.arithmetic.sx"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(invert|and|or|xor|equalVerify|equal|cat|split|bin2num|num2bin|size)\\b(?=\\s|//|/\\*|$)",
+          "name": "keyword.bitwise.sx"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(nop2|checkLockTimeVerify|nop3|checkSequenceVerify|nop4|nop5|nop6|nop7|nop8|nop9|nop10|nop1|nop|verify|verIf|verNotif|ver|if|notif|else|endIf|return)\\b(?=\\s|//|/\\*|$)",
+          "name": "keyword.control.sx"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(ripemd160|sha1|sha256|hash160|hash256|codeSeparator|checkSigVerify|checkSig|checkMultiSigVerify|checkMultiSig)\\b(?=\\s|//|/\\*|$)",
+          "name": "keyword.crypto.sx"
+        },
+        {
+          "match": "(?i)\\b(verifyCtx|autoSlice|toLEU|fromLEU|splitCtx|checkCtx|copyTopAlt)\\b(?=\\s|//|/\\*|$)",
+          "name": "support.stdlib.sx"
+        },
+        {
+          "match": "(?i)^#[a-zA-Z_0-9]*(?=\\s|//|/\\*|$)",
+          "name": "entity.name.function.sx"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(1negate|false|true)\\b(?=\\s|//|/\\*|$)",
+          "name": "constant.numeric.sx"
+        },
+        {
+          "match": "(?i)\\b(0|OP_10|OP_11|OP_12|OP_13|OP_14|OP_15|OP_16|OP_0|OP_1|OP_2|OP_3|OP_4|OP_5|OP_6|OP_7|OP_8|OP_9)\\b(?=\\s|//|/\\*|$)",
+          "name": "constant.numeric.sx"
+        },
+        {
+          "match": "(?i)\\.\\w+(?:\\.\\d+)?(?=\\s|//|/\\*|$)",
+          "name": "variable"
+        },
+        {
+          "match": "(?i)[-]?[0-9]+n(?=\\s|//|/\\*|$)",
+          "name": "constant.numeric.sx"
+        },
+        {
+          "match": "(?i)((0x)?[a-fA-F0-9]{2})+(?=\\s|//|/\\*|$)",
+          "name": "constant.numeric.hex.sx"
+        },
+        {
+          "match": "(?i)\\b(?:OP_)?(reserved1|reserved2|reserved|pushData1|pushData2|pushData4|smallData|smallInteger|pubKeys|pubKeyHash|pubKey|invalidOpCode)\\b(?=\\s|//|/\\*|$)",
+          "name": "keyword.other.sx"
+        },
+
+        {
+          "match": "(?i)@(label|test|l|t):(?=.*?(?=\\s|$))",
+          "name": "entity.name.tag.sx"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#strings"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "match": "//.*$",
+          "name": "comment.line.double-slash.sx"
+        },
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.sx",
+          "patterns": [
+            {
+              "include": "#comments"
+            }
+          ]
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.sx",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.sx"
+            }
+          ]
+        },
+        {
+          "begin": "'",
+          "end": "'",
+          "name": "string.quoted.single.sx",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.sx"
+            }
+          ]
+        },
+        {
+          "begin": "`",
+          "end": "`",
+          "name": "string.quoted.backtick.sx",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape.sx"
+            },
+            {
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "name": "meta.embedded.line.sx",
+              "patterns": [
+                {
+                  "include": "#expression"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,78 @@
+// BoltNFT.sx
+import 'stdlib'
+// Quick macro for reuse
+#copyTopAlt fromAltStack dup toAltStack end
+// Unlocking args
+.ancestorPc1 .ancestorPc2 .ancestorPc3 .ancestorPc4 .ancestorPc5 .ancestorPc6 .fundOutpoint .changeOutput .beneficiaryPubKeyHash .sig .pubKey .ctx
+| // Locking args & script
+.pubKeyHash .pubKeyHashCommitment .txoType .parentOutpoint .grandparentOutpoint .issuerPubKey .genesisOutpoint
+not @label:isGenesis dup toAltStack 
+if 7n pick
+    equalVerify // @Genesis pubKey MUST be issuer's to enforce sig
+else drop // Use issuerPubKey from scriptCode
+endIf
+0notEqual @l:hasGrandparent swap drop // Use parentOutpoint from scriptCode
+swap toAltStack // hasGrandparent
+3n roll ifDup
+if // If not melting
+    dup 41 @l:sighashType verifyCtx // OP_PUSHTX
+    // 2drop // Save compilation time
+    splitCtx 5n roll autoSlice // Split ctx and slice scriptCode
+    // Build the next token output(s)
+    copyTopAlt notIf  // If prepareTx
+        7n pick 14 24n roll cat tuck cat 0101 cat @l:tokenScript swap
+        // build a bolt output 
+        01000000000000001976a9 swap cat 88ac cat @l:bolt swap
+    else // if settleTx
+        6n pick // must go beneficiary
+        dup cat 0100 cat @l:tokenScript ff @l:offsetDummyValue swap // Hack ff byte to keep stacks aligned
+    endIf
+    24 cat 15n pick cat // parentOutpoint
+    6n pick cat // grandparentOutpoint
+    4n roll @l:tokenScript // issuerPubKey
+    fromAltStack fromAltStack dup rot swap toAltStack toAltStack  // If mint/isGenesis
+    if 24 16n pick cat // Build from ctx.outpoint 
+    else 4n pick // Copy genesisOutpoint direct from ctx
+    endIf cat @l:tokenId // Unique blob
+    3n roll // ctx.scriptCode
+    cat @l:tokenIdScriptCode tuck // Duplicate
+    cat @l:tokenScript
+    size fd swap cat @l:scriptLength tuck // Duplicate
+    0100000000000000 swap cat swap cat @l:token
+    copyTopAlt notIf // If creating bolt
+        24n roll // changeOutput
+        4n roll swap cat cat // Concatenate bolt output
+    else 25n roll cat // changeOutput
+    endIf
+    hash256 // Calculate hashOutputs
+    copyTopAlt if 3n roll drop endIf // Drop ff offset byte
+    11n roll equalVerify // ctx.hashOutputs check
+    copyTopAlt 17n roll boolAnd @l:rebuildAncestor // txType && hasGrandparent 
+    copyTopAlt
+    notIf 21n else 22n endIf
+    roll swap tuck // Get fundOutpoint in place
+    if // Rebuild ancestor
+        // txVersion CAT txInsVi (02)
+        28n roll 02 cat @l:grandparentTx // .ancestorPc1 
+        // vin outpoint + scriptVi + script to ctx up to & including outpoint CAT scriptLength
+        28n roll cat 3n pick cat @l:grandparentTx // .ancestorPc2 
+        // scriptCode data [pubKeyHash,pubKeyHashCommitment,txoType,parentOutpoint,grandparentOutpoint,issuerPubKey,genesisOutpoint] CAT tokenIdScriptCode PROBLEM @Genesis is 0000000000000000000
+        27n roll cat @l:grandparentTx 4n pick 71n split nip cat @l:grandparentTx // .ancestorPc3 (Tx+1 ctx.genesisOutpoint is zeros)!
+        // end of ctx (value to sighashType) + fund vin complete CAT txOutsVi (03) + 01000000 CAT scriptLength
+        26n roll cat @l:grandparentTx 030100000000000000 cat 3n roll cat @l:grandparentTx // .ancestorPc4 
+        // scriptCode data [pubKeyHash,pubKeyHashCommitment,txoType,parentOutpoint,grandparentOutpoint] CAT tokenIdScriptCode CAT bolt output
+        24n roll cat 3n pick cat @l:grandparentTx 01000000000000001976a9 cat 9n roll 88ac cat cat @l:grandparentTx // .ancestorPc5 
+        // change output + nLockTime
+        22n roll cat @l:grandparentTx 
+        hash256 @l:grandparentTxid 01000000 cat @l:grandparentOutpoint swap cat @l:boltAndFundOutpoints // .ancestorPc6
+        12n // outpoint
+    else 14n endIf // outpoint
+    roll swap cat @l:prevOuts hash256 // Calculate hashPrevouts
+    1n pick // rebuildAncestor
+    if 13n else 15n endIf roll equalVerify // ctx.hashPrevouts check
+endIf
+if ff ff endif // Double stack alignment bytes :P
+17n roll 17n roll dup hash160 18n roll equalVerify checkSig toAltStack 
+// Cleaning of stack to be removed when Teranode™ is released & consensus cares no more ;)
+repeat 11n depth dup if 2n greaterThanOrEqual if 2drop else drop endif else drop endIf end
+fromAltStack // CheckSig result
