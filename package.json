@@ -10,11 +10,9 @@
   "categories": [
     "Programming Languages"
   ],
-  "activationEvents": [
-    "onLanguage:sx"
-  ],
+  "activationEvents": [],
   "main": "./extension.js",
-  "contributes": {
+  "contributes": {     
     "languages": [
       {
         "id": "sx",
@@ -30,7 +28,6 @@
         "path": "./syntaxes/sx.tmLanguage.json"
       }
     ]
-   
   },
   "scripts": {
     "lint": "eslint .",

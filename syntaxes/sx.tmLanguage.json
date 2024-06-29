@@ -31,8 +31,8 @@
           "name": "keyword.crypto.sx"
         },
         {
-          "match": "(?i)\\b(verifyCtx|autoSlice|toLEU|fromLEU|splitCtx|checkCtx|copyTopAlt)\\b(?=\\s|//|/\\*|$)",
-          "name": "support.stdlib.sx"
+          "match": "(?i)\\b(verifyCtx|autoSlice|toLEU|fromLEU|splitCtx|checkCtx|copyTopAlt|mod2)\\b(?=\\s|//|/\\*|$)",
+          "name": "entity.name.function.sx"
         },
         {
           "match": "(?i)^#[a-zA-Z_0-9]*(?=\\s|//|/\\*|$)",

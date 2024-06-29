@@ -1,20 +1,6 @@
 {
   "name": "Default Dark+",
   "type": "dark",
-  "colors": {
-    "editor.background": "#1E1E1E",
-    "editor.foreground": "#D4D4D4",
-    "editor.lineHighlightBackground": "#3A3D41",
-    "editorIndentGuide.background": "#404040",
-    "editorLineNumber.foreground": "#5A5A5A",
-    "editor.selectionBackground": "#264F78",
-    "editor.selectionHighlightBackground": "#264F78",
-    "editor.findMatchBackground": "#72523D",
-    "editor.findMatchHighlightBackground": "#72523D",
-    "editor.inactiveSelectionBackground": "#3A3D41",
-    "editorBracketMatch.background": "#0E639C",
-    "editorBracketMatch.border": "#0E639C"
-  },
   "tokenColors": [
     {
       "scope": "comment",
