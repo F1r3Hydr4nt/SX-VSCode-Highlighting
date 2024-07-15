@@ -3,6 +3,13 @@
   "scopeName": "source.sx",
   "fileTypes": ["sx"],
   "patterns": [{ "include": "#expression" }],
+  "colors": {
+    "keyword.control.sx": "#FF0000",
+    "keyword.stack.sx": "#00FF00",
+    "keyword.arithmetic.sx": "#0000FF",
+    "keyword.bitwise.sx": "#FFFF00",
+    "keyword.crypto.sx": "#00FFFF"
+  },
   "repository": {
     "expression": {
       "patterns": [

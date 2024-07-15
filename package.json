@@ -27,6 +27,13 @@
         "scopeName": "source.sx",
         "path": "./syntaxes/sx.tmLanguage.json"
       }
+    ],
+    "themes": [
+      {
+        "label": "SX Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/sx-theme.json"
+      }
     ]
   },
   "scripts": {
