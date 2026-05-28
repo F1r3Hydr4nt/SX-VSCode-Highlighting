@@ -31,7 +31,19 @@
     {
       "scope": "constant.numeric",
       "settings": {
-        "foreground": "#B5CEA8"
+        "foreground": "#bb0000"
+      }
+    },
+    {
+      "scope": "constant.numeric.sx",
+      "settings": {
+        "foreground": "#bb0000"
+      }
+    },
+    {
+      "scope": "constant.numeric.hex.sx",
+      "settings": {
+        "foreground": "#666666"
       }
     },
     {
@@ -75,7 +87,22 @@
     {
       "scope": "keyword.crypto.sx",
       "settings": {
-        "foreground": "#fff700"
+        "foreground": "#fff700",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": "entity.name.function.macro.sx",
+      "settings": {
+        "foreground": "#ae00ff",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "scope": "entity.name.function.sx",
+      "settings": {
+        "foreground": "#00C0CB",
+        "fontStyle": "bold"
       }
     },
     {
@@ -93,7 +120,7 @@
     {
       "scope": "variable",
       "settings": {
-        "foreground": "#3dc9b0"
+        "foreground": "#61afef"
       }
     },
     {

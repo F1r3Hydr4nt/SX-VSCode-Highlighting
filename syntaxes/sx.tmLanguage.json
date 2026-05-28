@@ -64,8 +64,12 @@
         },
 
         {
-          "match": "(?i)@(label|test|l|t):(?=.*?(?=\\s|$))",
+          "match": "(?i)@(section|cs|label|test|s|l|t):(?=.*?(?=\\s|$))",
           "name": "entity.name.tag.sx"
+        },
+        {
+          "match": "(?i)\\b(catVarInt|catVarData|calcVarInt|verSizeCatArg)\\b(?=\\s|//|/\\*|$)",
+          "name": "entity.name.function.macro.sx"
         },
         {
           "include": "#comments"

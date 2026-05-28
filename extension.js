@@ -1,36 +1,133 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-const vscode = require('vscode');
+// SX VS Code extension entry point.
+//
+// Registers:
+//   - FoldingRangeProvider          (@section / @s / repeat / #function / /* */)
+//   - HoverProvider                  (opcode metadata)
+//   - CompletionItemProvider         (keywords, opcodes, .args, snippets)
+//   - DocumentFormattingEditProvider (whole-document formatSx)
+//   - Commands: sx.formatDocument, sx.modifyStackIndices,
+//                sx.stackIdxsBumpUp, sx.stackIdxsBumpDown
+//
+// All providers/commands are scoped to `language: sx`.
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+const vscode = require("vscode");
 
-/**
- * @param {vscode.ExtensionContext} context
- */
-function activate(context) {
+const { createFoldingRangeProvider } = require("./src/provideFoldingRanges");
+const { createHoverProvider } = require("./src/provideHover");
+const { createCompletionItemProvider } = require("./src/provideCompletionItems");
+const {
+  formatSx,
+  createDocumentFormattingProvider,
+} = require("./src/formatSx");
+const { transformStackIdxs } = require("./src/stackIdxTransform");
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "sx" is now active!');
+const SX_SELECTOR = { language: "sx" };
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('sx.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from SX!');
-	});
-
-	context.subscriptions.push(disposable);
+function applyStackTransform(editor, delta, threshold) {
+  if (!editor) return;
+  const sel = editor.selection;
+  const range = !sel || sel.isEmpty
+    ? new vscode.Range(
+        editor.document.positionAt(0),
+        editor.document.positionAt(editor.document.getText().length)
+      )
+    : new vscode.Range(sel.start, sel.end);
+  const before = editor.document.getText(range);
+  const after = transformStackIdxs(before, delta, threshold);
+  if (after === before) return;
+  editor.edit((eb) => eb.replace(range, after));
 }
 
-// This method is called when your extension is deactivated
+function activate(context) {
+  context.subscriptions.push(
+    vscode.languages.registerFoldingRangeProvider(
+      SX_SELECTOR,
+      createFoldingRangeProvider(vscode)
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      SX_SELECTOR,
+      createHoverProvider(vscode)
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      SX_SELECTOR,
+      createCompletionItemProvider(vscode),
+      ".",
+      "@",
+      "#"
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerDocumentFormattingEditProvider(
+      SX_SELECTOR,
+      createDocumentFormattingProvider(vscode)
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sx.formatDocument", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) return;
+      const doc = editor.document;
+      const original = doc.getText();
+      const formatted = formatSx(original);
+      if (formatted === original) return;
+      const fullRange = new vscode.Range(
+        doc.positionAt(0),
+        doc.positionAt(original.length)
+      );
+      await editor.edit((eb) => eb.replace(fullRange, formatted));
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sx.modifyStackIndices", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) return;
+      const thresholdStr = await vscode.window.showInputBox({
+        prompt: "Modify pick/roll indices >= threshold",
+        value: "0",
+        validateInput: (v) =>
+          /^-?\d+$/.test(v.trim()) ? null : "Enter an integer",
+      });
+      if (thresholdStr === undefined) return;
+      const deltaStr = await vscode.window.showInputBox({
+        prompt: "Delta to add (e.g. 1, -2)",
+        value: "1",
+        validateInput: (v) =>
+          /^-?\d+$/.test(v.trim()) ? null : "Enter a signed integer",
+      });
+      if (deltaStr === undefined) return;
+      applyStackTransform(
+        editor,
+        parseInt(deltaStr.trim(), 10),
+        parseInt(thresholdStr.trim(), 10)
+      );
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sx.stackIdxsBumpUp", () => {
+      applyStackTransform(vscode.window.activeTextEditor, +1, 0);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sx.stackIdxsBumpDown", () => {
+      applyStackTransform(vscode.window.activeTextEditor, -1, 0);
+    })
+  );
+}
+
 function deactivate() {}
 
 module.exports = {
-	activate,
-	deactivate
-}
+  activate,
+  deactivate,
+};

@@ -2,14 +2,16 @@
   "name": "sx",
   "displayName": "SX",
   "description": "Bitcoin Script Extended Syntax Highlighting",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.90.0"
   },
   "categories": [
     "Programming Languages"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:sx"
+  ],
   "main": "./extension.js",
   "contributes": {
     "languages": [
@@ -33,12 +35,54 @@
         "uiTheme": "vs-dark",
         "path": "./themes/sx-theme.json"
       }
+    ],
+    "commands": [
+      {
+        "command": "sx.formatDocument",
+        "title": "SX: Format Document",
+        "category": "SX"
+      },
+      {
+        "command": "sx.modifyStackIndices",
+        "title": "SX: Modify Stack Indices...",
+        "category": "SX"
+      },
+      {
+        "command": "sx.stackIdxsBumpUp",
+        "title": "SX: Stack Indices ++",
+        "category": "SX"
+      },
+      {
+        "command": "sx.stackIdxsBumpDown",
+        "title": "SX: Stack Indices --",
+        "category": "SX"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "sx.formatDocument",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f",
+        "when": "editorTextFocus && editorLangId == sx"
+      },
+      {
+        "command": "sx.stackIdxsBumpUp",
+        "key": "ctrl+shift+up",
+        "mac": "cmd+shift+up",
+        "when": "editorTextFocus && editorLangId == sx"
+      },
+      {
+        "command": "sx.stackIdxsBumpDown",
+        "key": "ctrl+shift+down",
+        "mac": "cmd+shift+down",
+        "when": "editorTextFocus && editorLangId == sx"
+      }
     ]
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "yarn run lint",
-    "test": "vscode-test"
+    "test": "node ./test/run.js"
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
